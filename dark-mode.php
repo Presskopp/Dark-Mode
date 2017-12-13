@@ -149,7 +149,7 @@ class Dark_Mode {
 			$user_id = get_current_user_id();
 
 		}
-
+		
 		// Check if the user is using Dark Mode
 		if ( 'on' == get_user_meta( $user_id, 'dark_mode', true ) ) {
 
@@ -157,20 +157,42 @@ class Dark_Mode {
 			if ( true === self::is_dark_mode_auto( $user_id ) && true === $check_auto ) {
 
 				// Get the time ranges from the user meta but add one day to the end time
-				$auto_start = date_i18n( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_start', true ) ) );
-				$auto_end = date_i18n( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_end', true ) ) );
+				$auto_start = date( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_start', true ) ) );
+				$auto_end = date( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_end', true ) ) );
 
 				// Get the current time
-				$current_time = date_i18n( 'H:i' );
+				$current_time = date_i18n ( 'H:i' );
 				
-				// Check the current time is between the start and end time
-				if ( $current_time >= $auto_start || $current_time <= $auto_end ) {
+				/**
+				 * Here we check if the start time is later than the end time
+				 * and if the current time is within the time frame
+				 * so it can be enabled.
+				 */
+				if ( ( $user_dm_start > $user_dm_end ) && ( ( $current_time >= $user_dm_start ) || ($current_time <= $user_dm_end ) ) ) {
 
-					// Set automatically and on right now
+					// Dark Mode is set automatically and on right now
 					return true;
 
+				} else {
+					
+					/**
+					* Check if start time is less (or equals) end time
+					* and if the current time is within the time frame
+					* so it can be enabled.
+					*/
+					if ( ( $user_dm_start <= $user_dm_end ) && ( ( $current_time >= $user_dm_start ) && ($current_time <= $user_dm_end ) ) ) {
+						
+						// Dark Mode is set automatically and on right now
+						return true;
+						
+					} else {
+					
+						return false; // not in timeframe
+					
+					}
+					
 				}
-
+				
 			} else {
 
 				// It is always on
@@ -180,8 +202,11 @@ class Dark_Mode {
 
 		}
 
-		// It's not enabled
-		return false;
+		// It is not enabled
+		else {
+
+			return false;
+		}
 
 	}
 
