@@ -156,12 +156,12 @@ class Dark_Mode {
 			// Does this user has Dark Mode turned on automatically?
 			if ( true === self::is_dark_mode_auto( $user_id ) && true === $check_auto ) {
 
-				// Get the time ranges from the user meta but add one day to the end time
-				$auto_start = date( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_start', true ) ) );
-				$auto_end = date( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_end', true ) ) );
+				// Get the time ranges from the user meta
+				$auto_start = date_i18n( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_start', true ) ) );
+				$auto_end = date_i18n( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_end', true ) ) );
 
 				// Get the current time
-				$current_time = date_i18n ( 'H:i' );
+				$current_time = date_i18n( 'H:i' );
 				
 				/**
 				 * Here we check if the start time is later than the end time
