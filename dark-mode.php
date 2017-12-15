@@ -157,54 +157,62 @@ class Dark_Mode {
 			if ( true === self::is_dark_mode_auto( $user_id ) && true === $check_auto ) {
 
 				// Get the time ranges from the user meta
-				$auto_start = date_i18n( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_start', true ) ) );
-				$auto_end = date_i18n( 'H:i', strtotime( get_user_meta( $user_id, 'dark_mode_end', true ) ) );
-
-				// Get the current time
-				$current_time = date_i18n( 'H:i' );
+				$auto_start = get_user_meta( $user_id, 'dark_mode_start', true );
+				$auto_end   = get_user_meta( $user_id, 'dark_mode_end', true );
 				
-				/**
-				 * Here we check if the start time is later than the end time
-				 * and if the current time is within the time frame
-				 * so it can be enabled.
-				 */
-				if ( ( $user_dm_start > $user_dm_end ) && ( ( $current_time >= $user_dm_start ) || ($current_time <= $user_dm_end ) ) ) {
+				// Check if start time / end time is set
+				if ( !empty ( $auto_start ) && !empty ( $auto_end ) ) {
+			
+					// convert to local time
+					$auto_start = date_i18n( 'H:i', strtotime( $auto_start ) );
+					$auto_end = date_i18n( 'H:i', strtotime( $auto_end ) );
 
-					// Dark Mode is set automatically and on right now
-					return true;
-
-				} else {
+					// Get the current time
+					$current_time = date_i18n( 'H:i' );
 					
 					/**
-					* Check if start time is less (or equals) end time
-					* and if the current time is within the time frame
-					* so it can be enabled.
-					*/
-					if ( ( $user_dm_start <= $user_dm_end ) && ( ( $current_time >= $user_dm_start ) && ($current_time <= $user_dm_end ) ) ) {
-						
+					 * Here we check if the start time is later than the end time
+					 * and if the current time is within the time frame
+					 * so it can be enabled.
+					 */
+					if ( ( $auto_start > $auto_end ) && ( ( $current_time >= $auto_start ) || ( $current_time <= $auto_end ) ) ) {
+
 						// Dark Mode is set automatically and on right now
 						return true;
-						
+
 					} else {
-					
-						return false; // not in timeframe
-					
+						
+						/**
+						* Check if start time is less (or equals) end time
+						* and if the current time is within the time frame
+						* so it can be enabled.
+						*/
+						if ( ( $auto_start <= $auto_end ) && ( ( $current_time >= $auto_start ) && ( $current_time <= $auto_end ) ) ) {
+							
+							// Dark Mode is set automatically and on right now
+							return true;
+							
+						} else {
+							
+							// We're not in given active timeframe
+							return false;
+						
+						}
+						
 					}
-					
-				}
 				
-			} else {
+				} else {
 
-				// It is always on
-				return true;
+					// It is always on or set to auto mode, but start time or end time is not set
+					return true;
 
+				}
+			
 			}
 
-		}
+		} else {
 
-		// It is not enabled
-		else {
-
+			// It is not enabled
 			return false;
 		}
 
